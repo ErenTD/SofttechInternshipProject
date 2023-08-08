@@ -3,6 +3,7 @@ package com.erentd.softtechinternshipproject.view
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.erentd.softtechinternshipproject.model.CharacterModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,17 +55,20 @@ fun CharacterRow(character: CharacterModel) {
         .background(color = MaterialTheme.colorScheme.background)
         .padding(all = 5.dp)
     ) {
-        Column {
-            Text(
-                text = character.name,
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(5.dp)
-            )
-            Text(
-                text = character.gender,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(5.dp)
-            )
+        Row {
+            AsyncImage(model = character.image, contentDescription = "Image of ${character.name}")
+            Column {
+                Text(
+                    text = character.name,
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.padding(5.dp)
+                )
+                Text(
+                    text = character.gender,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(5.dp)
+                )
+            }
         }
     }
 }

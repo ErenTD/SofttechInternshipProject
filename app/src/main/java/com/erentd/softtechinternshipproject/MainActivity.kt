@@ -13,16 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.erentd.softtechinternshipproject.model.CharacterLocation
 import com.erentd.softtechinternshipproject.model.CharacterModel
-import com.erentd.softtechinternshipproject.model.ResponseModel
-import com.erentd.softtechinternshipproject.service.CharacterAPI
+import com.erentd.softtechinternshipproject.service.characterAPIImplementation
 import com.erentd.softtechinternshipproject.ui.theme.SofttechInternshipProjectTheme
 import com.erentd.softtechinternshipproject.view.AppBar
 import com.erentd.softtechinternshipproject.view.CharacterList
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,32 +31,9 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen() {
-    var characterModels = remember { mutableStateListOf<CharacterModel>()}
+    val characterModels = remember { mutableStateListOf<CharacterModel>()}
 
-    val baseURL = "https://rickandmortyapi.com/api/"
-
-    val retrofit = Retrofit.Builder()
-        .baseUrl(baseURL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-        .create(CharacterAPI::class.java)
-
-    val call = retrofit.getData()
-
-    call.enqueue(object: Callback<ResponseModel> {
-        override fun onResponse(call: Call<ResponseModel>, response: Response<ResponseModel>) {
-            if (response.isSuccessful) {
-                response.body()?.let {
-                    characterModels.addAll(it.results)
-                }
-            }
-        }
-
-        override fun onFailure(call: Call<ResponseModel>, t: Throwable) {
-            t.printStackTrace()
-        }
-
-    })
+    characterAPIImplementation(characterModels)
 
     Scaffold(topBar = {AppBar()}) {
         Column (modifier = Modifier.padding(it)) {

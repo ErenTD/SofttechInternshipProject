@@ -66,10 +66,12 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.4.3")
     debugImplementation("androidx.compose.ui:ui-tooling:1.4.3")
     debugImplementation("androidx.compose.ui:ui-test-manifest:1.4.3")
+    implementation("androidx.paging:paging-runtime-ktx:3.2.0")
+    implementation("androidx.paging:paging-compose:3.2.0")
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.retrofit2:adapter-rxjava2:2.9.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
 
     implementation("io.coil-kt:coil-compose:2.4.0")
 }

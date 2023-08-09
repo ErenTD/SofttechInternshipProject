@@ -2,13 +2,18 @@ package com.erentd.softtechinternshipproject.service
 
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.erentd.softtechinternshipproject.model.EpisodeModel
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
-fun episodeAPIImplementation(episodeNumber : Int, episodeModels : SnapshotStateList<EpisodeModel>) {
+fun episodeAPIImplementation(
+    episodeNumber : Int,
+    episodeModels : SnapshotStateList<EpisodeModel>
+) {
     val baseURL = "https://rickandmortyapi.com/api/"
 
     val retrofit = Retrofit.Builder()
@@ -17,19 +22,19 @@ fun episodeAPIImplementation(episodeNumber : Int, episodeModels : SnapshotStateL
         .build()
         .create(EpisodeAPI::class.java)
 
-    val call = retrofit.getData(episodeNumber)
+    val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        println("Error: ${throwable.localizedMessage}")
+    }
 
-    call.enqueue(object: Callback<EpisodeModel> {
-        override fun onResponse(call: Call<EpisodeModel>, response: Response<EpisodeModel>) {
+    CoroutineScope(Dispatchers.IO).launch {
+        val response = retrofit.getData(episodeNumber)
+
+        withContext(Dispatchers.Main + exceptionHandler) {
             if (response.isSuccessful) {
                 response.body()?.let {
                     episodeModels.add(it)
                 }
             }
         }
-
-        override fun onFailure(call: Call<EpisodeModel>, t: Throwable) {
-            t.printStackTrace()
-        }
-    })
+    }
 }

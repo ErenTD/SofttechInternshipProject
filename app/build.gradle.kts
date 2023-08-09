@@ -69,6 +69,9 @@ dependencies {
     implementation("androidx.paging:paging-runtime-ktx:3.2.0")
     implementation("androidx.paging:paging-compose:3.2.0")
 
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:adapter-rxjava2:2.9.0")
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")

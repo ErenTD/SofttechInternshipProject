@@ -2,10 +2,11 @@ package com.erentd.softtechinternshipproject.service
 
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.erentd.softtechinternshipproject.model.CharacterModel
-import com.erentd.softtechinternshipproject.model.ResponseModel
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
@@ -26,10 +27,14 @@ fun getPage(
     characterModels : SnapshotStateList<CharacterModel>,
     retrofit : CharacterAPI
 ) {
-    val call = retrofit.getData(characterPage)
+    val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        println("Error: ${throwable.localizedMessage}")
+    }
 
-    call.enqueue(object: Callback<ResponseModel> {
-        override fun onResponse(call: Call<ResponseModel>, response: Response<ResponseModel>) {
+    CoroutineScope(Dispatchers.IO).launch {
+        val response = retrofit.getData(characterPage)
+
+        withContext(Dispatchers.Main + exceptionHandler) {
             if (response.isSuccessful) {
                 response.body()?.let {
                     characterModels.addAll(it.results)
@@ -38,9 +43,5 @@ fun getPage(
                 }
             }
         }
-
-        override fun onFailure(call: Call<ResponseModel>, t: Throwable) {
-            t.printStackTrace()
-        }
-    })
+    }
 }

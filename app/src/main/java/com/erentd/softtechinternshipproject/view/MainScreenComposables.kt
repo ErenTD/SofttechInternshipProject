@@ -9,9 +9,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -46,10 +45,27 @@ fun AppBar() {
 }
 
 @Composable
-fun CharacterList(characters: List<CharacterModel>) {
+fun CharacterList(state: CharacterListState, viewModel: CharacterListView) {
+    val characters = state.characters
     LazyColumn(contentPadding = PaddingValues(5.dp)) {
-        items(characters) {character ->
+        items(characters.size) {i ->
+            val character = characters[i]
+            if (i >= characters.size - 1 && !state.endReached && !state.isLoading) {
+                viewModel.loadNextItems()
+            }
             CharacterRow(character)
+        }
+        item {
+            if (state.isLoading) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
         }
     }
 }
@@ -89,8 +105,10 @@ fun LastEpisodesList(character: CharacterModel) {
     val episodes = remember { mutableStateListOf<EpisodeModel>()}
     var episodeCounter = 3
     while (episodeCounter > 0) {
-        if (lastEpisodeIndex >= 0) {
+        if (lastEpisodeIndex >= 999999 /* TODO: Implement a proper way of displaying episodes */) {
             episodeAPIImplementation(lastEpisodeIndex - 3 + episodeCounter, episodes)
+            lastEpisodeIndex--
+            episodeCounter--
         }
         else {
             episodes.add(EpisodeModel(
@@ -102,9 +120,9 @@ fun LastEpisodesList(character: CharacterModel) {
                 "-",
                 "-"
             ))
+            lastEpisodeIndex--
+            episodeCounter--
         }
-        episodeCounter--
-        lastEpisodeIndex--
     }
     Column (verticalArrangement = Arrangement.Bottom, modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -112,13 +130,13 @@ fun LastEpisodesList(character: CharacterModel) {
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(start = 5.dp)
         )
-        LazyRow (
+        Row (
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            items(episodes.reversed()) {episode ->
-                LastEpisodesEntry(episode = episode)
-            }
+            LastEpisodesEntry(episode = episodes[2])
+            LastEpisodesEntry(episode = episodes[1])
+            LastEpisodesEntry(episode = episodes[0])
         }
     }
 }

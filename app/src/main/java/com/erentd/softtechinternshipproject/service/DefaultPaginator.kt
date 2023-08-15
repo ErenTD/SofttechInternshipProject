@@ -1,6 +1,6 @@
 package com.erentd.softtechinternshipproject.service
 
-class CharacterPaginator<Key, Item>(
+class DefaultPaginator<Key, Item>(
     private val initialKey: Key,
     private inline val onLoadUpdated: (Boolean) -> Unit,
     private inline val onRequest: suspend (nextKey: Key) -> Result<List<Item>>,

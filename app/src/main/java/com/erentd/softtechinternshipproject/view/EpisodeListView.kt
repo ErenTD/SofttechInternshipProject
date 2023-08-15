@@ -5,34 +5,35 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.erentd.softtechinternshipproject.model.CharacterModel
-import com.erentd.softtechinternshipproject.service.CharacterAPIImplementation
+import com.erentd.softtechinternshipproject.model.EpisodeModel
 import com.erentd.softtechinternshipproject.service.DefaultPaginator
+import com.erentd.softtechinternshipproject.service.EpisodeAPIImplementation
 import kotlinx.coroutines.launch
 
-class CharacterListView: ViewModel() {
-    var state by mutableStateOf(CharacterListState())
-    private val characterApi = CharacterAPIImplementation()
+class EpisodeListView: ViewModel() {
+    private var episodeIds = listOf(1,2,3) // TODO: Pass parameters here (Make sure list.size >= 3)
+    var state by mutableStateOf(EpisodeListState(episodeIds = episodeIds))
+    private val episodeApi = EpisodeAPIImplementation()
 
     private val paginator = DefaultPaginator (
-        initialKey = state.page,
+        initialKey = state.episode,
         onLoadUpdated = {
             state = state.copy(isLoading = it)
         },
-        onRequest = { nextPage ->
-            characterApi.getCharacters(nextPage)
+        onRequest = { nextEpisode ->
+            episodeApi.getEpisode(state.episodeIds[nextEpisode])
         },
         getNextKey = {
-            state.page + 1
+            state.episode + 1
         },
         onError = {
             state = state.copy(error = it?.localizedMessage)
         },
-        onSuccess = { characters, newKey ->
+        onSuccess = { episodes, newKey ->
             state = state.copy(
-                characters = state.characters + characters,
-                page = newKey,
-                endReached = characters.isEmpty()
+                episodes = state.episodes + episodes,
+                episode = newKey,
+                endReached = state.episode == 2
             )
         }
     )
@@ -48,10 +49,11 @@ class CharacterListView: ViewModel() {
     }
 }
 
-data class CharacterListState(
+data class EpisodeListState(
     val isLoading: Boolean = false,
-    val characters: List<CharacterModel> = emptyList(),
+    val episodes: List<EpisodeModel> = emptyList(),
     val error: String? = null,
     val endReached: Boolean = false,
-    val page: Int = 1
+    val episode: Int = 0,
+    val episodeIds: List<Int> = emptyList()
 )

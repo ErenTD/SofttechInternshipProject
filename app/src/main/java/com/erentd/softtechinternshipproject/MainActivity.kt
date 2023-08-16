@@ -1,5 +1,7 @@
 package com.erentd.softtechinternshipproject
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,22 +19,30 @@ import com.erentd.softtechinternshipproject.view.CharacterListView
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val sharedPreferences = getSharedPreferences(
+            "com.erentd.softtechinternshipproject",
+            Context.MODE_PRIVATE
+        )
         setContent {
             SofttechInternshipProjectTheme {
-                MainScreen()
+                MainScreen(sharedPreferences)
             }
         }
     }
 }
 
 @Composable
-fun MainScreen() {
+fun MainScreen(sharedPreferences: SharedPreferences) {
     val viewModel = viewModel<CharacterListView>()
     val state = viewModel.state
 
     Scaffold(topBar = {AppBar()}) {
         Column (modifier = Modifier.padding(it)) {
-            CharacterList(state = state, viewModel = viewModel)
+            CharacterList(
+                state = state,
+                viewModel = viewModel,
+                sharedPreferences = sharedPreferences
+            )
         }
     }
 }

@@ -5,17 +5,35 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.erentd.softtechinternshipproject.model.CharacterModel
 import com.erentd.softtechinternshipproject.model.EpisodeModel
 import com.erentd.softtechinternshipproject.service.DefaultPaginator
 import com.erentd.softtechinternshipproject.service.EpisodeAPIImplementation
 import kotlinx.coroutines.launch
 
-class EpisodeListView: ViewModel() {
-    private var episodeIds = listOf(1,2,3) // TODO: Pass parameters here (Make sure list.size >= 3)
-    var state by mutableStateOf(EpisodeListState(episodeIds = episodeIds))
-    private val episodeApi = EpisodeAPIImplementation()
+class EpisodeListView(character: CharacterModel, episodeApi: EpisodeAPIImplementation) :
+    ViewModel() {
+    private fun getEpisodesList(character: CharacterModel): List<Int> {
+        val episodeIds: ArrayList<Int> = arrayListOf()
+        for (episode in character.episode.reversed()) {
+            if (episodeIds.size >= 3) break
+            episodeIds.add(
+                Regex("(?<episodeId>[0-9]+)$")
+                    .find(episode)!!
+                    .groups["episodeId"]
+                    ?.value!!
+                    .toInt()
+            )
+        }
+        while (episodeIds.size < 3) {
+            episodeIds.add(0)
+        }
+        return episodeIds.toList()
+    }
 
-    private val paginator = DefaultPaginator (
+    var state by mutableStateOf(EpisodeListState(episodeIds = getEpisodesList(character)))
+
+    private val paginator = DefaultPaginator(
         initialKey = state.episode,
         onLoadUpdated = {
             state = state.copy(isLoading = it)

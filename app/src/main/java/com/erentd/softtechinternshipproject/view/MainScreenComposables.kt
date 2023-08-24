@@ -35,10 +35,11 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.erentd.softtechinternshipproject.model.CharacterModel
 import com.erentd.softtechinternshipproject.model.EpisodeModel
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,10 +47,10 @@ fun AppBar() {
     TopAppBar(
         title = {
             Text(
-            text = "Rick and Morty",
-            fontSize = 26.sp,
-            color = MaterialTheme.colorScheme.onPrimaryContainer
-        )
+                text = "Rick and Morty",
+                fontSize = 26.sp,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primary
@@ -65,7 +66,7 @@ fun CharacterList(
 ) {
     val characters = state.characters
     LazyColumn(contentPadding = PaddingValues(5.dp)) {
-        items(characters.size) {i ->
+        items(characters.size) { i ->
             val character = characters[i]
             if (i >= characters.size - 1 && !state.endReached && !state.isLoading) {
                 viewModel.loadNextItems()
@@ -89,24 +90,28 @@ fun CharacterList(
 
 @Composable
 fun CharacterRow(character: CharacterModel, sharedPreferences: SharedPreferences) {
-    val viewModel = viewModel<EpisodeListView>()
+    val viewModel =
+        koinViewModel<EpisodeListView>(parameters = { parametersOf(character) })
     val state = viewModel.state
-    Card(modifier = Modifier
-        .fillMaxWidth(0.98F)
-        .background(color = MaterialTheme.colorScheme.background)
-        .padding(all = 5.dp)
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(0.98F)
+            .background(color = MaterialTheme.colorScheme.background)
+            .padding(all = 5.dp)
     ) {
         Row {
             AsyncImage(
                 model = character.image,
                 contentDescription = "Image of ${character.name}",
             )
-            Column (modifier = Modifier.fillMaxHeight()) {
+            Column(modifier = Modifier.fillMaxHeight()) {
                 Row {
                     Text(
                         text = character.name,
                         style = MaterialTheme.typography.headlineMedium,
-                        modifier = Modifier.padding(start = 5.dp).fillMaxSize(0.8f),
+                        modifier = Modifier
+                            .padding(start = 5.dp)
+                            .fillMaxSize(0.8f),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -157,14 +162,14 @@ fun FavoriteButton(
 
 @Composable
 fun LastEpisodesList(state: EpisodeListState, viewModel: EpisodeListView) {
-    Column (verticalArrangement = Arrangement.Bottom, modifier = Modifier.fillMaxWidth()) {
+    Column(verticalArrangement = Arrangement.Bottom, modifier = Modifier.fillMaxWidth()) {
         Text(
             text = "Last 3 appearances of character",
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(start = 5.dp)
         )
         LazyRow(contentPadding = PaddingValues(start = 5.dp)) {
-            items(state.episodes.size) {i ->
+            items(state.episodes.size) { i ->
                 val episode = state.episodes[i]
                 if (i >= state.episodes.size - 1 && !state.endReached && !state.isLoading) {
                     viewModel.loadNextItems()
@@ -188,7 +193,7 @@ fun LastEpisodesList(state: EpisodeListState, viewModel: EpisodeListView) {
 }
 
 @Composable
-fun LastEpisodesEntry(episode : EpisodeModel) {
+fun LastEpisodesEntry(episode: EpisodeModel) {
     Text(
         text = episode.episode,
         style = MaterialTheme.typography.bodySmall,

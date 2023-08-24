@@ -8,7 +8,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 class EpisodeAPIImplementation {
     suspend fun getEpisode(
         epNumber: Int
-    ) : Result<List<EpisodeModel>> {
+    ): Result<List<EpisodeModel>> {
         val baseURL = "https://rickandmortyapi.com/api/"
 
         val episodeRetrofit = Retrofit.Builder()
@@ -17,12 +17,14 @@ class EpisodeAPIImplementation {
             .build()
             .create(EpisodeAPI::class.java)
 
-        return Result.success(listOf(
-            episodeGenerator(episodeRetrofit.getData(epNumber))
-        ))
+        return Result.success(
+            listOf(
+                episodeGenerator(episodeRetrofit.getData(epNumber))
+            )
+        )
     }
 
-    private fun episodeGenerator(episodeResponse: Response<EpisodeModel>) : EpisodeModel {
+    private fun episodeGenerator(episodeResponse: Response<EpisodeModel>): EpisodeModel {
         return if (episodeResponse.isSuccessful) {
             episodeResponse.body()!!
         } else {

@@ -10,11 +10,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.erentd.softtechinternshipproject.ui.theme.SofttechInternshipProjectTheme
 import com.erentd.softtechinternshipproject.view.AppBar
 import com.erentd.softtechinternshipproject.view.CharacterList
 import com.erentd.softtechinternshipproject.view.CharacterListView
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,11 +33,11 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen(sharedPreferences: SharedPreferences) {
-    val viewModel = viewModel<CharacterListView>()
+    val viewModel = koinViewModel<CharacterListView>()
     val state = viewModel.state
 
-    Scaffold(topBar = {AppBar()}) {
-        Column (modifier = Modifier.padding(it)) {
+    Scaffold(topBar = { AppBar() }) {
+        Column(modifier = Modifier.padding(it)) {
             CharacterList(
                 state = state,
                 viewModel = viewModel,

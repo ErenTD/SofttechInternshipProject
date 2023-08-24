@@ -10,9 +10,8 @@ import com.erentd.softtechinternshipproject.service.CharacterAPIImplementation
 import com.erentd.softtechinternshipproject.service.DefaultPaginator
 import kotlinx.coroutines.launch
 
-class CharacterListView: ViewModel() {
+class CharacterListView(characterApi: CharacterAPIImplementation): ViewModel() {
     var state by mutableStateOf(CharacterListState())
-    private val characterApi = CharacterAPIImplementation()
 
     private val paginator = DefaultPaginator (
         initialKey = state.page,

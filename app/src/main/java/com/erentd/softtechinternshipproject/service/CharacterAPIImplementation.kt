@@ -7,7 +7,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 class CharacterAPIImplementation {
     suspend fun getCharacters(
         page: Int,
-    ) : Result<List<CharacterModel>> {
+    ): Result<List<CharacterModel>> {
         val baseURL = "https://rickandmortyapi.com/api/"
 
         val characterRetrofit = Retrofit.Builder()
